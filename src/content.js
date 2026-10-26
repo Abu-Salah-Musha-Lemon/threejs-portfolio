@@ -97,3 +97,6 @@ export const zones = [
   { id: 'projects', name: 'THE SHOWCASE', subtitle: 'Real GitHub projects', heading: 'Projects with purpose.', color: '#35d0c0', x: -15, z: 12, chapter: '03', symbol: '◈' },
   { id: 'contact', name: 'THE SIGNAL', subtitle: 'Contact & links', heading: 'Let’s create what comes next.', color: '#ff8a5b', x: 15, z: 12, chapter: '04', symbol: '↗' }
 ];
+
+/** World settings. autoDayByClock: first visit follows the visitor's local time (day 06:00 to 18:00). */
+export const settings = { autoDayByClock: true, dayStartHour: 6, nightStartHour: 18 };

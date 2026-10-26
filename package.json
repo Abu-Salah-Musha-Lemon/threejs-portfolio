@@ -3,11 +3,12 @@
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "LEMONVERSE — a playable Three.js portfolio for Abu Salah Musha Lemon.",
+  "description": "LEMONVERSE \u2014 a playable Three.js portfolio for Abu Salah Musha Lemon.",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node tests/collision.test.mjs"
   },
   "dependencies": {
     "three": "0.180.0"

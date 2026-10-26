@@ -1,5 +1,5 @@
 import { createWorld } from './world.js';
-import { profile, zones } from './content.js';
+import { profile, zones, settings } from './content.js';
 
 const $ = (selector) => document.querySelector(selector);
 const el = (id) => document.getElementById(id);
@@ -168,6 +168,18 @@ async function copyEmail(button){
   catch{button.textContent=profile.email;}
   setTimeout(()=>{button.textContent='COPY EMAIL';},2200);
 }
+const DAY_KEY='lemonverse:daylight:v1';
+function syncDayNight(day){
+  const b=el('daynight');b.textContent=day?'☀':'☾';
+  b.setAttribute('aria-label',day?'Switch to night mode':'Switch to day mode');b.title=day?'Switch to night':'Switch to day';
+  document.body.classList.toggle('is-day',day);
+}
+function initDayNight(){
+  let stored=null;try{stored=localStorage.getItem(DAY_KEY);}catch{}
+  const h=new Date().getHours(),byClock=h>=settings.dayStartHour&&h<settings.nightStartHour;
+  const day=stored?stored==='day':(settings.autoDayByClock?byClock:false);
+  world.setDaylight(day,true);syncDayNight(day);
+}
 function installEvents(){
   el('start').addEventListener('click',enterWorld);
   el('intro-how').addEventListener('click',showInstructions);
@@ -202,7 +214,7 @@ function installEvents(){
     el('sound').setAttribute('aria-label',state.sound?'Disable sound':'Enable sound');
     toast(state.sound?'SOUND ENABLED':'SOUND MUTED');if(state.sound)chime();
   });
-  el('daynight').addEventListener('click',()=>{const day=world.toggleDaylight();el('daynight').textContent=day?'☀':'☾';toast(day?'DAYLIGHT MODE':'NIGHT MODE');});
+  el('daynight').addEventListener('click',()=>{const day=world.toggleDaylight();syncDayNight(day);try{localStorage.setItem(DAY_KEY,day?'day':'night');}catch{}toast(day?'DAYLIGHT MODE':'NIGHT MODE');});
   el('restart').addEventListener('click',()=>{
     state.visited.clear();state.queuedWin=false;state.winShown=false;storage.save(state.visited);renderQuest();toast('QUEST PROGRESS RESET');
   });
@@ -261,6 +273,8 @@ function initialize(){
   if(!HTMLCanvasElement.prototype.getContext)throw new Error('Canvas unavailable');
   // createWorld gives the actual WebGL renderer a chance to throw on unsupported devices.
   world=createWorld(el('game'),{onStationClick:handleStationClick});
+  initDayNight();
+  if(location.search.includes('debug'))window.__lemonverse=world;
   window.__devverseReady=true;
   el('loading').classList.add('loaded');
   setTimeout(()=>el('loading').hidden=true,reducedMotion?10:580);

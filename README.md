@@ -8,6 +8,7 @@ A custom 3D astronaut navigates a floating sci-fi island, where four distinct ar
 
 - **True Three.js scene:** hand-built geometries, animated architectural structures, glowing signs and pathways, 3D astronaut, water surface, scene lighting, orbiting objects, day/night mode, fog and shadows.
 - **Gameplay:** WASD / arrows, Shift sprint, E to open a chapter, clickable stations and a world map with fast travel. Progress is saved locally and completion triggers a quest ending.
+- **Living world:** lamps on every post, solid trees, grass and fireflies, and a smooth day and night cycle.
 - **Quick View:** every chapter on one scrollable page for visitors who do not want to play.
 - **Responsive controls:** virtual joystick, touch Explore control, adapted camera and pixel density on smaller screens.
 - **Verified portfolio:** StockGenie, ERP Pro Admin Panel, E-Commerce App, mediCash, ASML NU-CSE and earlier Personal Portfolio with links.

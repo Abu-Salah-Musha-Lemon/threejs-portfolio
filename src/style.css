@@ -89,3 +89,6 @@
 @media(max-width:600px){.topbar-actions #quick-view-hud{display:none}}
 @media(max-width:800px){.mission-panel.collapsed .panel-eyebrow,.mission-panel.collapsed .mission-count{white-space:nowrap}.mission-panel.collapsed{width:min(236px,64vw)}}
 @media(max-width:1120px){.controls-description{max-width:340px}}
+/* Day mode: the sky is bright, so HUD text gets a soft dark scrim to stay readable. */
+#hud::before,.hud::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:0;transition:opacity .8s;background:linear-gradient(180deg,rgba(11,18,32,.6),transparent 24%,transparent 68%,rgba(11,18,32,.65))}
+body.is-day #hud::before,body.is-day .hud::before{opacity:1}

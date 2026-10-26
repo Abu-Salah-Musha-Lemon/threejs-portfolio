@@ -1,4 +1,13 @@
-# LEMONVERSE test report · v2.1 · October 26, 2026
+# LEMONVERSE test report · v2.2 · October 26, 2026
+
+## v2.2 checks
+- `npm test` passes (collision unit tests, including 20,000 random points).
+- Real browser, software WebGL: 78 reachable colliders, 359 walks straight into them, 0 pass throughs.
+- 59 lamps registered, 30 trees in 9 groves, no JavaScript errors.
+- Night and day render correctly (instant switch). The animated switch takes about 2 seconds at 60 fps. In the slow software renderer it takes much longer, which is a test artifact.
+- Not tested: frame rate on real phones with 760 grass blades, 7 lights and tree shadows. If a low end phone stutters, lower `grassCount` in `src/nature.js` or the light pool in `src/world.js` (`lamps.initLights`).
+
+# v2.1 report (same day)
 
 ## Passed (real browser, software WebGL via SwiftShader)
 - `npm install` and `npm run build` succeed (Vite 7, three 0.180).

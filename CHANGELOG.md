@@ -1,3 +1,27 @@
+# Changelog v2.2 (world pass: lamps, collisions, trees, day and night)
+
+## Lamps
+- Every post now has a lamp: 24 walkway posts, 12 outer obelisks, station and hub pillars, rim bollards. 59 lamps in total.
+- Each lamp has a glowing head, a halo and a pool of light on the ground. They turn on at dusk and off at dawn.
+- Only 7 real lights (4 on phones) follow the player and switch to the nearest lamps, so the GPU stays fast. The player also carries a small headlamp at night.
+- Station beacons are dimmer by day.
+
+## Collisions
+- Trees have box colliders, bushes circles, rocks rotated boxes, obelisks and walkway posts also block. 120 colliders in total.
+- You slide along trunks instead of stopping dead. Click to walk steers around obstacles and gives up cleanly if stuck.
+- Logic lives in `src/collision.js` with a Node test: `npm test`.
+
+## Trees and nature
+- New `src/nature.js`: 9 groves with 30 trees in four kinds (pine, oak, birch, and a lemon tree with yellow fruit), 4 to 5 bushes per grove, rocks, moss patches, 760 swaying grass tufts, flowers.
+- Trunks have bark textures and branches, canopies are lumpy and textured, trees sway in wind and cast shadows (shadows off on phones).
+- Fireflies appear at night.
+
+## Day and night
+- New `src/atmosphere.js`. A single value drives sky dome, fog, sun and moonlight, exposure, sea color, clouds, stars, sun and moon. It passes through a warm dusk tint.
+- First visit follows the visitor's local time (day 06:00 to 18:00). The choice is remembered after the button is used. Set `settings.autoDayByClock = false` in `src/content.js` to always start at night.
+- In day mode the HUD gets a soft dark scrim so text stays readable.
+- Load with `?debug` in the URL to get `window.__lemonverse` for testing.
+
 # Changelog v2.1 (design and usability pass)
 
 ## Colors
