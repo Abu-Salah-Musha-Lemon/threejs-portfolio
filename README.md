@@ -8,6 +8,7 @@ A custom 3D astronaut navigates a floating sci-fi island, where four distinct ar
 
 - **True Three.js scene:** hand-built geometries, animated architectural structures, glowing signs and pathways, 3D astronaut, water surface, scene lighting, orbiting objects, day/night mode, fog and shadows.
 - **Gameplay:** WASD / arrows, Shift sprint, E to open a chapter, clickable stations and a world map with fast travel. Progress is saved locally and completion triggers a quest ending.
+- **Quick View:** every chapter on one scrollable page for visitors who do not want to play.
 - **Responsive controls:** virtual joystick, touch Explore control, adapted camera and pixel density on smaller screens.
 - **Verified portfolio:** StockGenie, ERP Pro Admin Panel, E-Commerce App, mediCash, ASML NU-CSE and earlier Personal Portfolio with links.
 - **Accessible UI:** semantic content dialogs, keyboard focus management, reduced-motion CSS and a static fallback if Three.js cannot load.
@@ -43,6 +44,7 @@ npm run preview
 | Sprint | Shift |
 | Explore nearest chapter | E |
 | Open/close map | M |
+| Quick View (no game) | Button in the intro and top bar |
 | Zoom camera | Mouse wheel |
 | Navigate on mobile | Virtual joystick and Explore button |
 | Fast travel | Click the map icon or mission item |
@@ -58,7 +60,7 @@ Chapter stations:
 
 `src/content.js` holds `profile` and `zones`. Edit the name, title, biography, social links and project entries there. Keep the `zones` IDs (`about`, `skills`, `projects`, `contact`) intact because they are gameplay identifiers.
 
-`src/world.js` controls actual Three.js geometry and environment details. `src/main.js` owns game and modal interactions. `src/style.css` controls the layout. The favicon lives in `assets/favicon.svg`.
+`src/world.js` controls actual Three.js geometry and environment details. `src/main.js` owns game and modal interactions. `src/style.css` controls the layout. The favicon lives in `assets/favicon.svg`. Project screenshots and the share image go in `public/`. See `CHANGELOG.md` for the v2.1 design pass.
 
 Before publishing, ask Lemon to review professional details for accuracy, especially education status, availability, email and employment history. See `SOURCES.md` for an explicit audit trail.
 

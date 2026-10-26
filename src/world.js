@@ -5,6 +5,7 @@
  */
 import * as THREE from 'three';
 import { zones } from './content.js';
+const REDUCED_MOTION = typeof matchMedia==='function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const V3 = THREE.Vector3;
 const lerp = THREE.MathUtils.lerp;
@@ -315,7 +316,7 @@ function makeSky(scene){
 }
 
 export function createWorld(container,{onStationClick=()=>{}}={}){
-  const scene=new THREE.Scene();const night=new THREE.Color(0x09131e),day=new THREE.Color(0x89b4c6);scene.background=night.clone();scene.fog=new THREE.FogExp2(night,.0084);
+  const scene=new THREE.Scene();const night=new THREE.Color(0x0b1220),day=new THREE.Color(0x89b4c6);scene.background=night.clone();scene.fog=new THREE.FogExp2(night,.0084);
   const camera=new THREE.PerspectiveCamera(44,1,.1,330);
   camera.position.set(4,36,48);camera.lookAt(1,0,0);
   const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});
@@ -379,8 +380,8 @@ export function createWorld(container,{onStationClick=()=>{}}={}){
     renderer.toneMappingExposure=lerp(renderer.toneMappingExposure,daylight?1.48:1.24,Math.min(1,d*2));
     sky.stars.material.opacity=lerp(sky.stars.material.opacity,daylight?.06:.78,Math.min(1,d));
     sky.halo.material.opacity=lerp(sky.halo.material.opacity,daylight?.16:.37,Math.min(1,d));
-    sky.stars.rotation.y+=d*.0007;
-    animated.forEach(a=>a.tick(time,d));
+    if(!REDUCED_MOTION)sky.stars.rotation.y+=d*.0007;
+    if(!REDUCED_MOTION)animated.forEach(a=>a.tick(time,d));
     stationObjects.forEach(s=>{s.aura.material.opacity=.10+Math.sin(time*1.1+s.index)*.045;s.sign.position.y=6.35+Math.sin(time*.8+s.index)*.09;});
     let arrived=null;const dir=new THREE.Vector2(axes.x,axes.y);if(dir.lengthSq()>.003)autopilot=null;
     if(playing&&!paused){

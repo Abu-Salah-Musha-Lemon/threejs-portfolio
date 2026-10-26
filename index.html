@@ -3,11 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#080d13" />
+  <meta name="theme-color" content="#0b1220" />
   <meta name="author" content="Abu Salah Musha Lemon" />
-  <meta name="description" content="LEMONVERSE — the playable 3D portfolio of Abu Salah Musha Lemon, Full-Stack Developer, Graphic Designer and Creative Technologist." />
+  <meta name="description" content="Portfolio of Abu Salah Musha Lemon, Laravel developer and UI and graphic designer in Dhaka. Explore six real projects in a playable 3D world or use Quick View." />
   <meta property="og:title" content="LEMONVERSE — Abu Salah Musha Lemon | Play the Portfolio" />
-  <meta property="og:description" content="Explore real projects, skills, career and contact in a playable Three.js world." />
+  <meta property="og:description" content="Laravel developer and designer in Dhaka. Six real projects, skills and contact in a playable 3D world, or skip the game with Quick View." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://abu-salah-musha-lemon.github.io/LEMONVERSE-ASM-Lemon-3D-Portfolio/og-image.png" />
+  <meta property="og:url" content="https://abu-salah-musha-lemon.github.io/LEMONVERSE-ASM-Lemon-3D-Portfolio/" />
+  <link rel="canonical" href="https://abu-salah-musha-lemon.github.io/LEMONVERSE-ASM-Lemon-3D-Portfolio/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="LEMONVERSE | Abu Salah Musha Lemon" />
+  <meta name="twitter:image" content="https://abu-salah-musha-lemon.github.io/LEMONVERSE-ASM-Lemon-3D-Portfolio/og-image.png" />
   <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -25,11 +32,11 @@
     <!-- Intro / title screen -->
     <section id="intro" class="intro" aria-labelledby="intro-title">
       <div class="intro-top"><div class="brand"><span class="brand-mark">✳</span> LEMON<span class="thin">VERSE</span><sup>®</sup></div><span class="intro-top-right"><i class="live-pulse"></i> ASM LEMON / 2026</span></div>
-      <div class="intro-content"><p class="eyebrow"><span class="dash"></span> ABU SALAH MUSHA LEMON / INTERACTIVE PORTFOLIO <span class="eyebrow-index">[ BUILD 01 ]</span></p>
+      <div class="intro-content"><p class="eyebrow"><span class="dash"></span> ABU SALAH MUSHA LEMON / INTERACTIVE PORTFOLIO </p>
         <h1 id="intro-title">DEVELOPER<span class="period">.</span><br/><span class="italic-stroke">DESIGNER.</span><br/><span class="neon-type">CREATOR<span class="period">.</span></span></h1>
-        <p class="intro-description">Meet Abu Salah Musha Lemon through a world you can play. Explore real Laravel systems, design skills, verified GitHub projects and his creative journey — one 3D destination at a time.</p>
-        <div class="intro-actions"><button id="start" class="cta" type="button"><span class="cta-icon">↗</span><span>ENTER THE WORLD</span><span class="cta-arrow">→</span></button><button id="intro-how" class="text-button" type="button">HOW TO PLAY <span>↗</span></button></div>
-        <div class="intro-stats"><div><b>04</b><span>LOCATIONS</span></div><div><b>01</b><span>PLAYER</span></div><div><b>∞</b><span>POSSIBILITIES</span></div></div>
+        <p class="intro-description">I build inventory, POS and ERP systems with Laravel, and design the brands and interfaces around them. Walk through the 3D world to see six real projects, or skip the game and see everything on one page.</p>
+        <div class="intro-actions"><button id="start" class="cta" type="button"><span class="cta-icon">↗</span><span>ENTER THE WORLD</span><span class="cta-arrow">→</span></button><button id="quick-view" class="outline-btn intro-quick" type="button">QUICK VIEW <span>NO GAME</span></button><button id="intro-how" class="text-button" type="button">HOW TO PLAY <span>↗</span></button></div>
+        <div class="intro-stats"><div><b>06</b><span>PUBLIC PROJECTS</span></div><div><b>32+</b><span>ERP DASHBOARD PAGES</span></div><div><b>05</b><span>CERTIFICATIONS</span></div></div>
       </div>
       <div class="intro-footer"><span>CRAFTED FOR A DEVELOPER WHO DESIGNS.</span><a href="https://github.com/Abu-Salah-Musha-Lemon" target="_blank" rel="noopener noreferrer" aria-label="Visit Abu Salah Musha Lemon on GitHub">GITHUB PROFILE ↗</a></div>
       <div class="intro-coordinate" aria-hidden="true">CODE <span>+</span> CREATIVITY<br/>ASM / EXPERIENCE</div>
@@ -37,8 +44,8 @@
 
     <!-- Active game HUD -->
     <div id="hud" class="hud" hidden>
-      <header class="game-topbar"><div class="topbar-brand"><span class="brand-mark">✳</span> LEMON<span class="thin">VERSE</span><span class="small-divider"></span><span class="mode-label">EXPLORATION MODE</span></div><div class="topbar-actions"><span class="status-pill"><i class="live-pulse"></i> SYSTEM ONLINE</span><button id="help" class="icon-btn" title="How to play" aria-label="How to play">?</button><button id="sound" class="icon-btn" title="Sound toggle" aria-label="Enable sound">♪</button><button id="daynight" class="icon-btn" title="Toggle day and night" aria-label="Toggle day and night">☾</button><button id="map-btn" class="outline-btn" type="button">▦ <span>WORLD MAP</span> <kbd>M</kbd></button></div></header>
-      <aside class="mission-panel"><div class="panel-eyebrow"><span>✳</span> CURRENT MISSION <span>MAIN QUEST</span></div><h2>Explore Lemon's work<span class="blink">_</span></h2><p>Discover all four stations to reveal his work and creative story.</p><div class="mission-progress"><div id="mission-progress" class="mission-progress-bar"></div></div><div class="mission-count"><span>DISCOVERED ZONES</span><strong><span id="discovered">00</span> / 04</strong></div><div id="mission-list" class="mission-list"></div><button id="restart" type="button" class="small-text-btn">↺ RESTART PROGRESS</button></aside>
+      <header class="game-topbar"><div class="topbar-brand"><span class="brand-mark">✳</span> LEMON<span class="thin">VERSE</span><span class="small-divider"></span><span class="mode-label">EXPLORATION MODE</span></div><div class="topbar-actions"><span class="status-pill"><i class="live-pulse"></i> OPEN TO COLLABORATION</span><button id="help" class="icon-btn" title="How to play" aria-label="How to play">?</button><button id="sound" class="icon-btn" title="Sound toggle" aria-label="Enable sound">♪</button><button id="daynight" class="icon-btn" title="Toggle day and night" aria-label="Toggle day and night">☾</button><button id="quick-view-hud" class="outline-btn" type="button"><span>QUICK VIEW</span></button><button id="map-btn" class="outline-btn" type="button">▦ <span>WORLD MAP</span> <kbd>M</kbd></button></div></header>
+      <aside id="mission-panel" class="mission-panel"><button id="mission-toggle" class="mission-toggle" type="button" aria-expanded="true" aria-label="Collapse mission panel">▴</button><div class="panel-eyebrow"><span>✳</span> CURRENT MISSION <span>MAIN QUEST</span></div><h2>Explore Lemon's work<span class="blink">_</span></h2><p>Discover all four stations to reveal his work and creative story.</p><div class="mission-progress"><div id="mission-progress" class="mission-progress-bar"></div></div><div class="mission-count"><span>DISCOVERED ZONES</span><strong><span id="discovered">00</span> / 04</strong></div><div id="mission-list" class="mission-list"></div><button id="restart" type="button" class="small-text-btn">↺ RESTART PROGRESS</button></aside>
       <div class="game-hint"><span class="hint-dot"></span><span id="hint-text">FOLLOW THE GLOWING SIGNALS</span></div>
       <div id="interact" class="interact" hidden><span class="interact-key">E</span><div><b id="interact-name">EXPLORE AREA</b><small>PRESS E TO DISCOVER</small></div><button id="interact-btn" type="button" aria-label="Explore nearby area">↗</button></div>
       <div class="game-bottom"><div class="controls-info"><span class="controls-title">MOVEMENT</span><div class="key-diagram"><span>W</span><div><span>A</span><span>S</span><span>D</span></div></div><span class="controls-description">MOVE <b>·</b> SHIFT TO SPRINT <b>·</b> E TO EXPLORE <b>·</b> M FOR MAP</span></div><div class="location-tag"><span>YOUR LOCATION</span><strong id="location-name">CENTRAL HUB</strong><div class="coordinate-label" id="coords">X 00.0 &nbsp; Z 00.0</div></div></div>
@@ -48,6 +55,9 @@
 
     <!-- Content panel -->
     <div id="details" class="overlay" hidden><div class="overlay-backdrop" data-close></div><section class="detail-panel" role="dialog" aria-modal="true" aria-labelledby="detail-title" tabindex="-1"><div class="detail-top"><div class="detail-breadcrumb">LEMONVERSE <span>/</span> <span id="detail-chapter">CHAPTER 01</span></div><button id="close-details" class="close-btn" type="button" aria-label="Close panel">✕ <span>ESC</span></button></div><div class="detail-eyebrow"><span id="detail-symbol">✳</span><span id="detail-kicker">THE ORIGIN / ABOUT ME</span></div><h2 id="detail-title"></h2><div id="detail-content" class="detail-content"></div><div class="detail-bottom"><span>EXPLORE MORE OF THE UNIVERSE</span><button id="next-zone" type="button" class="next-zone">NEXT LOCATION <span>↗</span></button></div></section></div>
+
+    <!-- Quick view: every chapter on one scrollable page, no game needed -->
+    <div id="quick-overlay" class="overlay" hidden><div class="overlay-backdrop" data-close></div><section class="detail-panel quick-panel" role="dialog" aria-modal="true" aria-labelledby="quick-title" tabindex="-1"><div class="detail-top"><div class="detail-breadcrumb">LEMONVERSE <span>/</span> QUICK VIEW</div><button id="close-quick" class="close-btn" type="button" aria-label="Close quick view">✕ <span>ESC</span></button></div><h2 id="quick-title" class="quick-title">Everything on one page.</h2><nav class="quick-nav" aria-label="Quick view sections"><button type="button" data-jump="about">About</button><button type="button" data-jump="skills">Skills</button><button type="button" data-jump="projects">Projects</button><button type="button" data-jump="contact">Contact</button></nav><div id="quick-content"></div><div class="detail-bottom"><span>PREFER TO EXPLORE?</span><button id="quick-enter" type="button" class="next-zone">PLAY THE 3D WORLD <span>↗</span></button></div></section></div>
 
     <!-- World map -->
     <div id="map-overlay" class="overlay" hidden><div class="overlay-backdrop" data-close></div><section class="map-panel" role="dialog" aria-modal="true" aria-labelledby="map-title" tabindex="-1"><div class="detail-top"><div class="detail-breadcrumb">NAVIGATION SYSTEM <span>/</span> LIVE MAP</div><button id="close-map" class="close-btn" type="button" aria-label="Close map">✕ <span>ESC</span></button></div><p class="eyebrow"><span class="dash"></span> TELEPORT TO ANY AREA</p><h2 id="map-title">CHOOSE YOUR <em>DESTINATION.</em></h2><div id="map-locations" class="map-locations"></div><p class="map-note">Walk to each station to explore naturally, or use a warp to jump straight into a chapter.</p></section></div>
@@ -62,7 +72,7 @@
     <noscript><div class="noscript">This interactive portfolio requires JavaScript. Enable JavaScript to play.</div></noscript>
     <section id="accessible-content" class="sr-only" aria-label="Portfolio content alternative"><h2>Accessible portfolio</h2><p>For keyboard navigation without the game, use the World Map button to choose a chapter. The content is displayed in accessible dialog panels.</p></section>
   </main>
-  <script defer src="./src/fallback.js"></script>
+  <script type="module" src="./src/fallback.js"></script>
   <script type="module" src="./src/main.js"></script>
 </body>
 </html>

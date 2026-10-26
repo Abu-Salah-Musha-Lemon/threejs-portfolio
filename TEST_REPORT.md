@@ -1,3 +1,20 @@
+# LEMONVERSE test report · v2.1 · October 26, 2026
+
+## Passed (real browser, software WebGL via SwiftShader)
+- `npm install` and `npm run build` succeed (Vite 7, three 0.180).
+- Production preview: the real Three.js world initializes (`__devverseReady` true), no JavaScript errors, no failed requests other than Google Fonts (blocked in the test sandbox).
+- Intro, in-game HUD, world map warp to Projects, Quick View open, jump links, Escape to close: desktop (1100×680) and mobile (390×760).
+- Screenshots in this package are from this real build.
+
+## Not tested
+- Real GPU frame rate and battery behavior. SwiftShader is software rendering and says nothing about speed on user devices.
+- Touch joystick on a physical phone, orientation changes, Safari and Firefox.
+- GitHub Pages deployment and the og:image preview on WhatsApp or LinkedIn.
+
+---
+
+# Earlier report (v2.0, October 23, 2026)
+
 # LEMONVERSE test report · October 23, 2026
 
 ## Passed

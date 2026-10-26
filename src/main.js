@@ -56,12 +56,20 @@ function aboutHTML(){
 function skillsHTML(){
   return `<p class="section-lede">An interdisciplinary toolkit spanning full-stack development, business applications, brand design and visual storytelling.</p><div class="skills-grid">${profile.skills.map((s,i)=>`<article class="skill-card"><span class="skill-num">LOADOUT / 0${i+1}</span><div class="skill-title"><span>${escapeHTML(s.icon)}</span><h3>${escapeHTML(s.category)}</h3></div><div class="skill-chips">${s.items.map(tag=>`<span>${escapeHTML(tag)}</span>`).join('')}</div></article>`).join('')}</div><div class="certifications"><h3>ADDITIONAL TRAINING</h3>${profile.certifications.map(c=>`<div><span>↗</span>${escapeHTML(c)}</div>`).join('')}</div>`;
 }
+function projectCard(p,i){
+  const art=safeUrl(p.image)||/^\.\/projects\/[\w\-./]+$/.test(p.image||'')?`<img src="${escapeHTML(p.image)}" alt="${escapeHTML(p.title)} screenshot" loading="lazy" decoding="async" />`:'';
+  return `<article class="project-card" style="--project-accent:${escapeHTML(p.accent)}"><div class="project-header"><span>PROJECT ${escapeHTML(p.number)}</span><span>${escapeHTML(p.year)}</span></div><div class="project-body"><div class="project-art project-art-${i%6}">${art}<div class="art-orb"></div><span class="art-monogram">${escapeHTML(p.code)}</span></div><div class="project-copy"><span class="project-type">${escapeHTML(p.type)}</span><h3>${escapeHTML(p.title)}</h3><p>${escapeHTML(p.description)}</p><div class="project-tags">${p.tags.map(t=>`<span>${escapeHTML(t)}</span>`).join('')}</div><div class="project-links">${externalLink('LIVE DEMO',p.live)}${externalLink('SOURCE CODE',p.github)}</div></div></div></article>`;
+}
+function projectRow(p){
+  return `<article class="project-row" style="--project-accent:${escapeHTML(p.accent)}"><div><span class="project-type">${escapeHTML(p.type)}</span><h3>${escapeHTML(p.title)}</h3></div><p>${escapeHTML(p.description)}</p><div class="project-links">${externalLink('LIVE DEMO',p.live)}${externalLink('SOURCE CODE',p.github)}</div></article>`;
+}
 function projectsHTML(){
-  return `<p class="section-lede">Six real public repositories selected from Lemon's GitHub. Explore the source code and open available live demos — no placeholder projects.</p><div class="project-list">${profile.projects.map((p,i)=>`<article class="project-card" style="--project-accent:${escapeHTML(p.accent)}"><div class="project-header"><span>PROJECT ${escapeHTML(p.number)} / GITHUB VERIFIED</span><span>${escapeHTML(p.year)}</span></div><div class="project-body"><div class="project-art project-art-${i%6}"><div class="art-orb"></div><span class="art-monogram">${escapeHTML(p.code)}</span><span class="art-credit">${escapeHTML(p.number)} // LEMONVERSE</span></div><div class="project-copy"><span class="project-type">${escapeHTML(p.type)}</span><h3>${escapeHTML(p.title)}</h3><p>${escapeHTML(p.description)}</p><div class="project-tags">${p.tags.map(t=>`<span>${escapeHTML(t)}</span>`).join('')}</div><div class="project-links">${externalLink('SOURCE CODE',p.github)}${externalLink('LIVE DEMO',p.live)}</div></div></div></article>`).join('')}</div>`;
+  const featured=profile.projects.filter(p=>p.featured), others=profile.projects.filter(p=>!p.featured);
+  return `<p class="section-lede">Six public projects from Lemon's GitHub. Start with the featured three, then browse the rest.</p><div class="project-list">${featured.map(projectCard).join('')}</div>${others.length?`<h3 class="section-title">MORE PROJECTS</h3><div class="project-compact">${others.map(projectRow).join('')}</div>`:''}`;
 }
 function contactHTML(){
   const mail = isRealEmail(profile.email);
-  return `<div class="contact-content"><p class="section-lede">Have a project, a design challenge, or a collaboration in mind? Connect with Lemon directly through his public professional channels.</p><div class="contact-address"><span>TRANSMISSION ADDRESS</span><strong>${escapeHTML(profile.email)}</strong></div>${mail?`<a class="cta contact-cta" href="mailto:${escapeHTML(profile.email)}?subject=Hello%20from%20LEMONVERSE">SEND A MESSAGE <span>↗</span></a>`:`<div class="placeholder-warning">✳ Set your real email in <code>src/content.js</code> to enable the contact button.</div>`}<div class="socials">${externalLink('GITHUB',profile.github)}${externalLink('LINKEDIN',profile.linkedin)}${externalLink('BEHANCE',profile.behance)}${externalLink('YOUTUBE',profile.youtube)}${safeUrl(profile.resume)?externalLink('RESUME',profile.resume):''}</div><div class="transmission-note"><span class="live-pulse"></span> ${escapeHTML(profile.availability)}</div></div>`;
+  return `<div class="contact-content"><p class="section-lede">Have a project, a design challenge, or a collaboration in mind? Connect with Lemon directly through his public professional channels.</p><div class="contact-address"><span>TRANSMISSION ADDRESS</span><strong>${escapeHTML(profile.email)}</strong></div>${profile.replyTime?`<p class="reply-note">${escapeHTML(profile.replyTime)}</p>`:''}${mail?`<a class="cta contact-cta" href="mailto:${escapeHTML(profile.email)}?subject=Hello%20from%20LEMONVERSE">SEND A MESSAGE <span>↗</span></a><button type="button" class="outline-btn copy-email" data-copy-email>COPY EMAIL</button>`:`<div class="placeholder-warning">✳ Set your real email in <code>src/content.js</code> to enable the contact button.</div>`}<div class="socials">${externalLink('GITHUB',profile.github)}${externalLink('LINKEDIN',profile.linkedin)}${externalLink('BEHANCE',profile.behance)}${externalLink('YOUTUBE',profile.youtube)}${safeUrl(profile.resume)?externalLink('RESUME',profile.resume):''}</div><div class="transmission-note"><span class="live-pulse"></span> ${escapeHTML(profile.availability)}</div></div>`;
 }
 const contentRenderers={about:aboutHTML,skills:skillsHTML,projects:projectsHTML,contact:contactHTML};
 function openModal(id){
@@ -112,6 +120,15 @@ function enterWorld(){
   // The intro remains in the DOM for accessibility, but is no longer interactive.
   el('intro').hidden=true;
 }
+function quickHTML(){
+  const sec=(id,title,html)=>`<section class="quick-section" id="quick-${id}"><h2>${title}</h2>${html}</section>`;
+  return sec('about','About',aboutHTML())+sec('skills','Skills and tools',skillsHTML())+sec('projects','Projects',projectsHTML())+sec('contact','Contact',contactHTML());
+}
+function openQuick(){
+  el('quick-content').innerHTML=quickHTML();
+  openModal('quick-overlay');
+  el('quick-overlay').querySelector('.quick-panel').scrollTop=0;
+}
 function showInstructions(){openModal('how-overlay');}
 function handleStationClick(id){
   if(state.modal)return;
@@ -146,11 +163,31 @@ function gameLoop(t){
   if(state.playing)updateNear();
   requestAnimationFrame(gameLoop);
 }
+async function copyEmail(button){
+  try{await navigator.clipboard.writeText(profile.email);button.textContent='COPIED ✓';}
+  catch{button.textContent=profile.email;}
+  setTimeout(()=>{button.textContent='COPY EMAIL';},2200);
+}
 function installEvents(){
   el('start').addEventListener('click',enterWorld);
   el('intro-how').addEventListener('click',showInstructions);
   el('help').addEventListener('click',showInstructions);
   el('map-btn').addEventListener('click',()=>openModal('map-overlay'));
+  el('quick-view').addEventListener('click',openQuick);
+  el('quick-view-hud').addEventListener('click',openQuick);
+  el('close-quick').addEventListener('click',()=>closeModal());
+  el('quick-enter').addEventListener('click',()=>{closeModal(true);enterWorld();});
+  el('quick-overlay').addEventListener('click',event=>{
+    const jump=event.target.closest('[data-jump]');
+    if(jump){document.getElementById('quick-'+jump.dataset.jump)?.scrollIntoView({behavior:reducedMotion?'auto':'smooth',block:'start'});}
+    const copy=event.target.closest('[data-copy-email]');
+    if(copy)copyEmail(copy);
+  });
+  el('detail-content').addEventListener('click',event=>{const copy=event.target.closest('[data-copy-email]');if(copy)copyEmail(copy);});
+  const panel=el('mission-panel'),toggle=el('mission-toggle');
+  const setCollapsed=v=>{panel.classList.toggle('collapsed',v);toggle.textContent=v?'▾':'▴';toggle.setAttribute('aria-expanded',String(!v));toggle.setAttribute('aria-label',v?'Expand mission panel':'Collapse mission panel');};
+  setCollapsed(matchMedia('(max-width:800px)').matches);
+  toggle.addEventListener('click',()=>setCollapsed(!panel.classList.contains('collapsed')));
   el('close-details').addEventListener('click',()=>closeModal());
   el('close-map').addEventListener('click',()=>closeModal());
   el('close-how').addEventListener('click',()=>closeModal());

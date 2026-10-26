@@ -1,13 +1,14 @@
 /**
  * LEMONVERSE — verified profile & repository content, checked 2026-10-23.
  * Public sources are documented in SOURCES.md. Edit content here before publishing.
+ * Projects with featured: true show as large cards; add image: './projects/name.webp' for a real screenshot.
  * Zone IDs and x/z values are used by the Three.js navigation system.
  */
 export const profile = {
   name: 'Abu Salah Musha Lemon',
   shortName: 'ASM',
-  title: 'Full-Stack Developer · Graphic Designer · Creative Technologist',
-  tagline: 'Engineering useful systems. Designing memorable experiences.',
+  title: 'Laravel Developer · UI & Graphic Designer',
+  tagline: 'I build inventory, POS and ERP systems with Laravel, and design the brands and interfaces around them.',
   location: 'Dhaka, Bangladesh',
   availability: 'OPEN TO COLLABORATION',
   email: 'lemonahmed512@gmail.com',
@@ -15,7 +16,8 @@ export const profile = {
   linkedin: 'https://www.linkedin.com/in/abu-salah-musha-lemon',
   behance: 'https://www.behance.net/abu-salah-musha',
   youtube: 'https://www.youtube.com/channel/UCuJrVADp9B0T9AIadz2eAVw',
-  resume: '', // Optional: replace with a public, privacy-reviewed CV URL
+  resume: '', // Optional: public CV URL. A RESUME button appears automatically when set.
+  replyTime: '', // Optional, e.g. 'I usually reply within 24 hours.' Shown on the contact panel when set.
   about: [
     'I work at the intersection of web engineering, graphic design, and digital experience. My projects range from business systems and inventory tools to responsive dashboards and education-focused websites.',
     'At TELCo, I combined IT coordination with creative production — supporting digital infrastructure, maintaining a company website, and designing brand and print materials.',
@@ -29,9 +31,9 @@ export const profile = {
   },
   education: 'MSc in CSE · Jagannath University (in progress; per GitHub profile)',
   facts: [
-    { value: '06', label: 'Featured repositories' },
-    { value: '02', label: 'Creative disciplines' },
-    { value: '04', label: 'World chapters' }
+    { value: '06', label: 'Public projects' },
+    { value: '32+', label: 'ERP dashboard pages' },
+    { value: '05', label: 'Certifications' }
   ],
   skills: [
     { category: 'Web Development', icon: '⌘', items: ['HTML5', 'CSS3', 'JavaScript', 'Bootstrap 5', 'jQuery', 'Responsive UI'] },
@@ -48,41 +50,41 @@ export const profile = {
   ],
   projects: [
     {
-      number: '01', code: 'SG', title: 'StockGenie', type: 'Inventory · Point of Sale', year: 'Public repository',
+      number: '01', code: 'SG', featured: true, image: '', title: 'StockGenie', type: 'Inventory · Point of Sale', year: 'Public repository',
       description: 'Laravel-powered inventory and POS system with stock management, transactions, PDF reporting and an interactive data-management interface.',
-      tags: ['Laravel 11', 'PHP', 'Bootstrap', 'DataTables'], accent: '#b7f86a',
+      tags: ['Laravel 11', 'PHP', 'Bootstrap', 'DataTables'], accent: '#ffc83d',
       github: 'https://github.com/Abu-Salah-Musha-Lemon/StockGenie', live: ''
     },
     {
-      number: '02', code: 'ERP', title: 'ERP Pro Admin Panel', type: 'ERP · Admin Dashboard', year: 'Live demo',
+      number: '02', code: 'ERP', featured: true, image: '', title: 'ERP Pro Admin Panel', type: 'ERP · Admin Dashboard', year: 'Live demo',
       description: 'Responsive ERP and inventory admin dashboard with analytics, business modules, dark mode, and over 32 pages.',
-      tags: ['HTML', 'CSS', 'JavaScript', 'Bootstrap'], accent: '#7edbff',
+      tags: ['HTML', 'CSS', 'JavaScript', 'Bootstrap'], accent: '#ffc83d',
       github: 'https://github.com/Abu-Salah-Musha-Lemon/ERP-Pro-Admin-Panel',
       live: 'https://abu-salah-musha-lemon.github.io/ERP-Pro-Admin-Panel/'
     },
     {
       number: '03', code: 'EC', title: 'E-Commerce Platform', type: 'Commerce · Laravel', year: 'Public repository',
       description: 'Single-admin web application with product and category management, authentication, order processing and dynamic data tables.',
-      tags: ['Laravel', 'PHP', 'Bootstrap', 'DataTables'], accent: '#ffc3a6',
+      tags: ['Laravel', 'PHP', 'Bootstrap', 'DataTables'], accent: '#ffc83d',
       github: 'https://github.com/Abu-Salah-Musha-Lemon/e-commerce-app', live: ''
     },
     {
       number: '04', code: 'MC', title: 'mediCash', type: 'Pharmacy · Sales', year: 'Public repository',
       description: 'Medicine sales and inventory management application for small pharmacies, including invoices, transaction workflows and notifications.',
-      tags: ['Laravel 11', 'JavaScript', 'DOMPDF', 'Bootstrap'], accent: '#e7a6ff',
+      tags: ['Laravel 11', 'JavaScript', 'DOMPDF', 'Bootstrap'], accent: '#ffc83d',
       github: 'https://github.com/Abu-Salah-Musha-Lemon/mediCash', live: ''
     },
     {
-      number: '05', code: 'NU', title: 'ASML NU-CSE', type: 'Education · Web Resource', year: 'Live demo',
+      number: '05', code: 'NU', featured: true, image: '', title: 'ASML NU-CSE', type: 'Education · Web Resource', year: 'Live demo',
       description: 'CSE-oriented resource website featuring course, institution and student-resource information for the National University community.',
-      tags: ['JavaScript', 'HTML5', 'CSS3', 'JSON'], accent: '#73e4cb',
+      tags: ['JavaScript', 'HTML5', 'CSS3', 'JSON'], accent: '#ffc83d',
       github: 'https://github.com/Abu-Salah-Musha-Lemon/ASML-NU-CSE',
       live: 'https://abu-salah-musha-lemon.github.io/ASML-NU-CSE/'
     },
     {
       number: '06', code: 'WEB', title: 'Personal Portfolio', type: 'Portfolio · Frontend', year: 'Live demo',
       description: 'An earlier personal web portfolio showcasing frontend development, responsive interface design and professional information.',
-      tags: ['HTML', 'CSS', 'JavaScript', 'Frontend'], accent: '#ffd970',
+      tags: ['HTML', 'CSS', 'JavaScript', 'Frontend'], accent: '#ffc83d',
       github: 'https://github.com/Abu-Salah-Musha-Lemon/Personal-Portfolio',
       live: 'https://abu-salah-musha-lemon.github.io/Personal-Portfolio/'
     }
@@ -90,8 +92,8 @@ export const profile = {
 };
 
 export const zones = [
-  { id: 'about', name: 'THE ORIGIN', subtitle: 'About Lemon', heading: 'Meet the mind behind the work.', color: '#b7f86a', x: -15, z: -10, chapter: '01', symbol: '✳' },
-  { id: 'skills', name: 'THE WORKSHOP', subtitle: 'Skills & tools', heading: 'Where design meets engineering.', color: '#8ca6ff', x: 15, z: -10, chapter: '02', symbol: '⌘' },
-  { id: 'projects', name: 'THE SHOWCASE', subtitle: 'Real GitHub projects', heading: 'Projects with purpose.', color: '#ffb08b', x: -15, z: 12, chapter: '03', symbol: '◈' },
-  { id: 'contact', name: 'THE SIGNAL', subtitle: 'Contact & links', heading: 'Let’s create what comes next.', color: '#e8a8ff', x: 15, z: 12, chapter: '04', symbol: '↗' }
+  { id: 'about', name: 'THE ORIGIN', subtitle: 'About Lemon', heading: 'Meet the mind behind the work.', color: '#ffc83d', x: -15, z: -10, chapter: '01', symbol: '✳' },
+  { id: 'skills', name: 'THE WORKSHOP', subtitle: 'Skills & tools', heading: 'Where design meets engineering.', color: '#5b8cff', x: 15, z: -10, chapter: '02', symbol: '⌘' },
+  { id: 'projects', name: 'THE SHOWCASE', subtitle: 'Real GitHub projects', heading: 'Projects with purpose.', color: '#35d0c0', x: -15, z: 12, chapter: '03', symbol: '◈' },
+  { id: 'contact', name: 'THE SIGNAL', subtitle: 'Contact & links', heading: 'Let’s create what comes next.', color: '#ff8a5b', x: 15, z: 12, chapter: '04', symbol: '↗' }
 ];

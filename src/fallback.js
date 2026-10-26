@@ -22,7 +22,7 @@ window.setTimeout(() => {
     <article class="skill-card">
       <span class="small-cap">THE PERSON</span>
       <h3>Abu Salah Musha Lemon</h3>
-      <p>Full-Stack Developer · Graphic Designer · Creative Technologist · Dhaka, Bangladesh.</p>
+      <p>Laravel Developer · UI &amp; Graphic Designer · Dhaka, Bangladesh.</p>
       <p>Previously Admin &amp; IT Coordinator at TELCo. Pursuing an MSc in CSE at Jagannath University (according to his public GitHub profile).</p>
     </article>
     <article class="skill-card">
