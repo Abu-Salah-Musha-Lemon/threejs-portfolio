@@ -1,0 +1,19 @@
+{
+  "name": "lemonverse-asm-lemon-threejs-game-portfolio",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "LEMONVERSE \u2014 a playable Three.js portfolio for Abu Salah Musha Lemon.",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node tests/collision.test.mjs"
+  },
+  "dependencies": {
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "vite": "^7.1.0"
+  }
+}
