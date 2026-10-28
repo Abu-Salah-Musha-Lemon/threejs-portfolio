@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { lamps, getGlowTexture } from './lamps.js';
+import { makeWaterMaterial, makeFallMaterial, updateWater } from './water.js';
+import { tuftGeometry, windMaterial, fernGeometry, flowerGeometry, canvasTex } from './plants.js';
 
 const V3 = THREE.Vector3, TAU = Math.PI * 2;
 const makeRand = (seed) => () => ((seed = (1664525 * seed + 1013904223) >>> 0) / 4294967296);
@@ -20,9 +22,15 @@ let ax = -bt.z, az = bt.x; if (az > 0) { ax = -ax; az = -az; }
 export const BRIDGE = { cx: bc.x, cz: bc.z, tx: bt.x, tz: bt.z, ax, az, L: 8.2, halfW: 1.25, archH: .95, endY: 0, t: tb };
 export const LOOKOUT = { x: 11.5, z: -31, r: 3 };
 export const SPRING = { x: -29.8, z: -22.2 };
+export const POND = { x: -24, z: 20.5, rx: 4.2, rz: 3.2 };
+export const PICNIC = { x: -18.2, z: 20.8 };
+export const FOREST = { x: 6, z: 25, r: 7.2 };
+export const PERCH = { x: -21.9, y: 1.32, z: 19.2 };
+export const POND_ROCK = { x: -25.6, z: 21.8, top: .42 };
+const TRAIL_FOREST = [[0.5, 8.7], [1.9, 13.6], [3.7, 18.8], [5.3, 22.2]];
 const TRAIL_SOUTH = [[1.5, -8.6], [3.2, -13.2], [5.8, -17.0], [BRIDGE.cx - BRIDGE.ax * (BRIDGE.L / 2 + .6), BRIDGE.cz - BRIDGE.az * (BRIDGE.L / 2 + .6)]];
 const TRAIL_NORTH = [[BRIDGE.cx + BRIDGE.ax * (BRIDGE.L / 2 + .6), BRIDGE.cz + BRIDGE.az * (BRIDGE.L / 2 + .6)], [9.4, -28.9], [LOOKOUT.x - 1.4, LOOKOUT.z + 1.4]];
-const trailCurves = [TRAIL_SOUTH, TRAIL_NORTH].map(p => new THREE.CatmullRomCurve3(p.map(([x, z]) => new V3(x, 0, z))));
+const trailCurves = [TRAIL_SOUTH, TRAIL_NORTH, TRAIL_FOREST].map(p => new THREE.CatmullRomCurve3(p.map(([x, z]) => new V3(x, 0, z))));
 const TRAIL_SAMPLES = trailCurves.flatMap(c => c.getSpacedPoints(40));
 
 /** Ground height under (x,z): the arched bridge deck, otherwise 0. */
@@ -39,13 +47,11 @@ export function terrainBlocked(x, z, margin = 0) {
   if (minDist(x, z, TRAIL_SAMPLES) < 1.7 + margin) return true;
   if (Math.hypot(x - LOOKOUT.x, z - LOOKOUT.z) < LOOKOUT.r + 1 + margin) return true;
   if (Math.hypot(x - SPRING.x, z - SPRING.z) < 4 + margin) return true;
+  if (((x - POND.x) / (POND.rx + 1.6 + margin)) ** 2 + ((z - POND.z) / (POND.rz + 1.6 + margin)) ** 2 < 1) return true;
+  if (Math.hypot(x - PICNIC.x, z - PICNIC.z) < 2.6 + margin) return true;
   return false;
 }
 
-function canvasTex(w, h, draw, repeat = [1, 1]) {
-  const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
-  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(...repeat); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
-}
 function ribbon(pts, widthAt, y, vScale = 1) {
   const n = pts.length, pos = new Float32Array(n * 6), uv = new Float32Array(n * 4), idx = []; let dist = 0;
   for (let i = 0; i < n; i++) {
@@ -60,34 +66,6 @@ function ribbon(pts, widthAt, y, vScale = 1) {
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals(); return g;
 }
-
-const WATER_VS = 'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}';
-const WATER_FS = `varying vec2 vUv;uniform float uTime;uniform float uDay;
-void main(){
-  float edge=abs(vUv.x-.5)*2.;
-  float flow=vUv.y*.8-uTime*.55;
-  float r1=sin(flow*9.+sin(vUv.x*7.)*1.4)*.5+.5;
-  float r2=sin(vUv.y*2.3-uTime*1.1-vUv.x*6.)*.5+.5;
-  vec3 deep=mix(vec3(.03,.13,.19),vec3(.09,.42,.53),uDay);
-  vec3 shallow=mix(vec3(.07,.27,.32),vec3(.32,.72,.74),uDay);
-  vec3 col=mix(deep,shallow,smoothstep(.15,1.,edge)*.8+r1*.18);
-  col+=pow(r2,6.)*mix(.10,.22,uDay)*vec3(.8,.95,1.);
-  float foam=smoothstep(.78,1.,edge)*(.5+.5*sin(vUv.y*34.-uTime*1.6));
-  col=mix(col,vec3(.88,.97,1.),foam*.5);
-  float a=mix(.72,.92,smoothstep(.0,.35,edge))*(1.-smoothstep(.9,1.,edge));
-  gl_FragColor=vec4(col,a);
-}`;
-const FALL_FS = `varying vec2 vUv;uniform float uTime;uniform float uDay;
-void main(){
-  float c=floor(vUv.x*16.);float h=fract(sin(c*91.7)*437.5);
-  float f=fract(vUv.y*3.4-uTime*(1.5+h*1.3)+h*5.);
-  float streak=smoothstep(0.,.5,f)*smoothstep(1.,.5,f);
-  float edge=smoothstep(0.,.1,vUv.x)*smoothstep(1.,.9,vUv.x);
-  vec3 base=mix(vec3(.55,.80,.90),vec3(.93,.99,1.),streak)*mix(.5,1.,uDay);
-  float a=(.5+.38*streak)*edge*(1.-smoothstep(.82,1.,vUv.y)*.75);
-  gl_FragColor=vec4(base,a);
-}`;
-const waterMat = (fs, side) => new THREE.ShaderMaterial({ vertexShader: WATER_VS, fragmentShader: fs, transparent: true, depthWrite: false, side, uniforms: { uTime: { value: 0 }, uDay: { value: 0 } } });
 
 /** Strip hanging from a lip: horizontal outward direction o, falling from y0 to y1. */
 function fallStrip(lip, o, y0, y1, width, push, rows = 16) {
@@ -106,20 +84,26 @@ export function buildTerrain(parent, { colliders, mobile = false, reduced = fals
   const mats = [];
 
   // Banks, stream, trails
-  const soil = new THREE.Mesh(ribbon(STREAM_SAMPLES, () => STREAM_WIDTH + 1.5, -.075, .2), new THREE.MeshStandardMaterial({
-    roughness: 1, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1,
-    map: canvasTex(64, 128, (g, w, h) => { const gr = g.createLinearGradient(0, 0, w, 0); gr.addColorStop(0, 'rgba(38,36,28,0)'); gr.addColorStop(.25, 'rgba(38,36,28,.95)'); gr.addColorStop(.75, 'rgba(38,36,28,.95)'); gr.addColorStop(1, 'rgba(38,36,28,0)'); g.fillStyle = gr; g.fillRect(0, 0, w, h); }),
-  }));
-  soil.receiveShadow = true; soil.renderOrder = 1; group.add(soil);
-  const sw = waterMat(WATER_FS, THREE.DoubleSide); mats.push(sw);
-  const stream = new THREE.Mesh(ribbon(STREAM_SAMPLES, (t) => STREAM_WIDTH * (.85 + .15 * Math.min(1, t * 4)), -.03, .35), sw); stream.renderOrder = 3; group.add(stream);
+  const gradAlpha = (stops) => canvasTex(64, 4, (g, w, h) => { const gr = g.createLinearGradient(0, 0, w, 0); stops.forEach(([p, c]) => gr.addColorStop(p, c)); g.fillStyle = gr; g.fillRect(0, 0, w, h); }, [1, 1], false);
+  const pebbleTex = canvasTex(256, 256, (g, w, h) => {
+    g.fillStyle = '#6b665a'; g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 560; i++) { const v = 90 + rnd() * 110, c = rnd() < .5 ? [v, v - 6, v - 18] : [v - 8, v - 8, v - 10]; g.fillStyle = `rgb(${c[0]},${c[1]},${c[2]})`; g.beginPath(); g.ellipse(rnd() * w, rnd() * h, 2 + rnd() * 5, 1.5 + rnd() * 3.5, rnd() * 3, 0, TAU); g.fill(); }
+  });
+  const bank = new THREE.Mesh(ribbon(STREAM_SAMPLES, () => STREAM_WIDTH + 3.2, -.078, .35), new THREE.MeshStandardMaterial({ map: pebbleTex, alphaMap: gradAlpha([[0, '#000'], [.16, '#bbb'], [.3, '#fff'], [.7, '#fff'], [.84, '#bbb'], [1, '#000']]), roughness: 1, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }));
+  bank.receiveShadow = true; bank.renderOrder = 1; group.add(bank);
+  const wet = new THREE.Mesh(ribbon(STREAM_SAMPLES, () => STREAM_WIDTH + 1.4, -.07, .3), new THREE.MeshBasicMaterial({ color: 0x15190f, transparent: true, opacity: .45, alphaMap: gradAlpha([[0, '#000'], [.3, '#fff'], [.7, '#fff'], [1, '#000']]), depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+  wet.renderOrder = 2; group.add(wet);
+  const sw = makeWaterMaterial(false); mats.push(sw);
+  const stream = new THREE.Mesh(ribbon(STREAM_SAMPLES, (t) => STREAM_WIDTH * (.88 + .12 * Math.min(1, t * 4)), -.03, .35), sw); stream.renderOrder = 3; group.add(stream);
 
-  const stoneTex = canvasTex(256, 256, (g, w, h) => {
-    g.clearRect(0, 0, w, h);
-    for (let i = 0; i < 26; i++) { const x = rnd() * w, y = rnd() * h, rx = 22 + rnd() * 20, ry = 16 + rnd() * 12, v = 120 + rnd() * 50; g.fillStyle = `rgb(${v},${v - 4},${v - 12})`; g.beginPath(); g.ellipse(x, y, rx, ry, rnd() * 3, 0, TAU); g.fill(); g.strokeStyle = 'rgba(30,26,22,.55)'; g.lineWidth = 3; g.stroke(); }
-  }, [1, 1]);
-  const trailMat = new THREE.MeshStandardMaterial({ map: stoneTex, roughness: .95, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2, alphaMap: canvasTex(64, 4, (g, w, h) => { const gr = g.createLinearGradient(0, 0, w, 0); gr.addColorStop(0, '#000'); gr.addColorStop(.18, '#fff'); gr.addColorStop(.82, '#fff'); gr.addColorStop(1, '#000'); g.fillStyle = gr; g.fillRect(0, 0, w, h); }) });
-  trailCurves.forEach(c => { const m = new THREE.Mesh(ribbon(c.getSpacedPoints(50), () => 2.5, -.06, .45), trailMat); m.renderOrder = 2; m.receiveShadow = true; group.add(m); });
+  // Dirt trail with grass fringe, like the forest path in the reference
+  const dirtTex = canvasTex(256, 256, (g, w, h) => {
+    g.fillStyle = '#b79a66'; g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 1100; i++) { const v = rnd() < .5 ? 'rgba(120,92,52,.22)' : 'rgba(228,205,150,.22)'; g.fillStyle = v; g.fillRect(rnd() * w, rnd() * h, 2 + rnd() * 5, 2 + rnd() * 4); }
+    for (let i = 0; i < 46; i++) { const v = 110 + rnd() * 60; g.fillStyle = `rgb(${v},${v - 6},${v - 14})`; g.strokeStyle = 'rgba(40,30,20,.5)'; g.lineWidth = 1.2; g.beginPath(); g.ellipse(rnd() * w, rnd() * h, 3 + rnd() * 5, 2 + rnd() * 3, rnd() * 3, 0, TAU); g.fill(); g.stroke(); }
+  });
+  const trailMat = new THREE.MeshStandardMaterial({ map: dirtTex, roughness: 1, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3, alphaMap: gradAlpha([[0, '#000'], [.2, '#fff'], [.8, '#fff'], [1, '#000']]) });
+  trailCurves.forEach(c => { const m = new THREE.Mesh(ribbon(c.getSpacedPoints(50), () => 2.7, -.06, .4), trailMat); m.renderOrder = 2; m.receiveShadow = true; group.add(m); });
 
   // Water boxes block walking unless the player is in the air (jump over the stream).
   const pts = curve.getSpacedPoints(Math.round(curve.getLength() / 1.4));
@@ -129,23 +113,45 @@ export function buildTerrain(parent, { colliders, mobile = false, reduced = fals
     colliders.push({ t: 'b', x: cx, z: cz, hw: len / 2 + .12, hd: STREAM_WIDTH / 2 - .1, rot: Math.atan2(b.z - a.z, b.x - a.x), low: true });
   }
 
-  // Bank rocks and reeds
-  const rockGeo = new THREE.DodecahedronGeometry(.4, 0), rockMat = new THREE.MeshStandardMaterial({ roughness: .95, flatShading: true });
-  const rocks = new THREE.InstancedMesh(rockGeo, rockMat, 70), reedCount = mobile ? 60 : 120;
+  // Bank life: moss covered rocks, pebbles, grass, daisies, ferns and reeds
+  const rockCount = mobile ? 90 : 150, pebCount = mobile ? 160 : 320, tuftCount = mobile ? 300 : 620, flowerCount = mobile ? 40 : 90, fernCount = mobile ? 14 : 30, reedCount = mobile ? 60 : 120;
+  const rocks = new THREE.InstancedMesh(new THREE.DodecahedronGeometry(.4, 0), new THREE.MeshStandardMaterial({ roughness: .95, flatShading: true }), rockCount);
+  const pebbles = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(.07, 0), new THREE.MeshStandardMaterial({ roughness: .9, flatShading: true }), pebCount);
+  const wind = windMaterial(.22), tufts = new THREE.InstancedMesh(tuftGeometry(rnd, .5), wind, tuftCount);
+  const daisies = new THREE.InstancedMesh(flowerGeometry(), new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .7, side: THREE.DoubleSide }), flowerCount);
+  const ferns = new THREE.InstancedMesh(fernGeometry(rnd), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: .8, side: THREE.DoubleSide }), fernCount);
   const reedGeo = new THREE.ConeGeometry(.035, 1.1, 4, 1); reedGeo.translate(0, .55, 0);
-  const reedMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 });
-  reedMat.onBeforeCompile = (sh) => { sh.uniforms.uTime = { value: 0 }; reedMat.userData.sh = sh; sh.vertexShader = 'uniform float uTime;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nfloat ph=instanceMatrix[3].x*.8+instanceMatrix[3].z*.6;\ntransformed.x+=sin(uTime*1.5+ph)*position.y*.2;\ntransformed.z+=cos(uTime*1.2+ph)*position.y*.1;'); };
-  const reeds = new THREE.InstancedMesh(reedGeo, reedMat, reedCount), o = new THREE.Object3D(), col = new THREE.Color();
-  let ri = 0, ei = 0;
-  for (let tries = 0; tries < 2000 && (ri < 70 || ei < reedCount); tries++) {
-    const p = STREAM_SAMPLES[Math.floor(rnd() * (STREAM_SAMPLES.length - 6)) + 3], q = STREAM_SAMPLES[STREAM_SAMPLES.indexOf(p) + 1];
+  const reedMat = windMaterial(.2), reeds = new THREE.InstancedMesh(reedGeo, reedMat, reedCount);
+  const o = new THREE.Object3D(), col = new THREE.Color(), cnt = { r: 0, p: 0, t: 0, f: 0, n: 0, e: 0 };
+  const place = (mesh, key, x, y, z, s, rot, c) => { o.position.set(x, y, z); o.rotation.set(rot[0], rot[1], rot[2]); o.scale.set(...s); o.updateMatrix(); mesh.setMatrixAt(cnt[key], o.matrix); if (c !== undefined) mesh.setColorAt(cnt[key], c); cnt[key]++; };
+  const nearBridge = (x, z, r = 4.4) => Math.hypot(x - BRIDGE.cx, z - BRIDGE.cz) < r || Math.hypot(x - SPRING.x, z - SPRING.z) < 3;
+  const bankPoint = (minOff, maxOff) => {
+    const i = Math.floor(rnd() * (STREAM_SAMPLES.length - 6)) + 3, p = STREAM_SAMPLES[i], q = STREAM_SAMPLES[i + 1];
     let tx = q.x - p.x, tz = q.z - p.z; const l = Math.hypot(tx, tz) || 1; tx /= l; tz /= l;
-    const side = rnd() < .5 ? -1 : 1, off = side * (STREAM_WIDTH / 2 + .05 + rnd() * .7), x = p.x - tz * off, z = p.z + tx * off;
-    if (Math.hypot(x - BRIDGE.cx, z - BRIDGE.cz) < 4.4 || Math.hypot(x - SPRING.x, z - SPRING.z) < 3) continue;
-    if (ri < 70 && rnd() < .5) { o.position.set(x, -.12, z); o.rotation.set(rnd(), rnd() * TAU, rnd()); const s = .5 + rnd() * .9; o.scale.set(s * 1.2, s * .7, s); o.updateMatrix(); rocks.setMatrixAt(ri, o.matrix); rocks.setColorAt(ri, col.setHSL(.58, .06, .26 + rnd() * .14)); ri++; }
-    else if (ei < reedCount) { o.position.set(x + (rnd() - .5) * .3, -.12, z + (rnd() - .5) * .3); o.rotation.set((rnd() - .5) * .2, rnd() * TAU, (rnd() - .5) * .2); o.scale.setScalar(.7 + rnd() * .8); o.updateMatrix(); reeds.setMatrixAt(ei, o.matrix); reeds.setColorAt(ei, col.setHSL(.22 + rnd() * .08, .45, .24 + rnd() * .12)); ei++; }
+    const off = (rnd() < .5 ? -1 : 1) * (minOff + rnd() * (maxOff - minOff));
+    return { x: p.x - tz * off, z: p.z + tx * off };
+  };
+  const trailPoint = () => { const p = TRAIL_SAMPLES[Math.floor(rnd() * TRAIL_SAMPLES.length)]; const a = rnd() * TAU, r = 1.35 + rnd() * 1.1; return { x: p.x + Math.cos(a) * r, z: p.z + Math.sin(a) * r }; };
+  for (let tries = 0; tries < 9000; tries++) {
+    const b = bankPoint(STREAM_WIDTH / 2 - .15, STREAM_WIDTH / 2 + 3.2);
+    if (nearBridge(b.x, b.z)) continue;
+    const edge = Math.hypot(b.x, b.z) < 37.2;
+    if (!edge) continue;
+    if (cnt.r < rockCount && rnd() < .1) { const mossy = rnd() < .58, s = .4 + rnd() * .85; place(rocks, 'r', b.x, -.14 + s * .06, b.z, [s * 1.2, s * .75, s], [rnd(), rnd() * TAU, rnd()], mossy ? col.setHSL(.27 + rnd() * .05, .42, .15 + rnd() * .08) : col.setHSL(.6, .06, .28 + rnd() * .14)); }
+    else if (cnt.p < pebCount && rnd() < .25) place(pebbles, 'p', b.x, -.1, b.z, [1 + rnd(), .7 + rnd() * .6, 1 + rnd()], [rnd(), rnd() * TAU, 0], col.setHSL(.1 + rnd() * .05, .12, .35 + rnd() * .25));
+    else if (cnt.t < tuftCount && rnd() < .5) place(tufts, 't', b.x, -.12, b.z, [1, .7 + rnd() * .9, 1].map(v => v * (.8 + rnd() * .5)), [0, rnd() * TAU, 0], col.setHSL(.24 + rnd() * .08, .5, .2 + rnd() * .16));
+    else if (cnt.n < flowerCount && rnd() < .08) place(daisies, 'n', b.x, -.12, b.z, [1, 1, 1].map(v => v * (.8 + rnd() * .5)), [0, rnd() * TAU, 0]);
+    else if (cnt.f < fernCount && rnd() < .03 && Math.hypot(b.x - BRIDGE.cx, b.z - BRIDGE.cz) > 6) place(ferns, 'f', b.x, -.12, b.z, [1, 1, 1].map(v => v * (.8 + rnd() * .6)), [0, rnd() * TAU, 0], col.setHSL(.27 + rnd() * .06, .5, .13 + rnd() * .09));
+    else if (cnt.e < reedCount && rnd() < .15) place(reeds, 'e', b.x + (rnd() - .5) * .3, -.12, b.z + (rnd() - .5) * .3, [1, 1, 1].map(v => v * (.7 + rnd() * .8)), [(rnd() - .5) * .2, rnd() * TAU, (rnd() - .5) * .2], col.setHSL(.22 + rnd() * .08, .45, .24 + rnd() * .12));
   }
-  rocks.count = ri; reeds.count = ei; rocks.castShadow = !mobile; reeds.castShadow = false; group.add(rocks, reeds);
+  for (let tries = 0; tries < 4000 && (cnt.t < tuftCount || cnt.n < flowerCount); tries++) {
+    const b = trailPoint();
+    if (Math.hypot(b.x, b.z) > 36 || Math.hypot(b.x - BRIDGE.cx, b.z - BRIDGE.cz) < 4.6) continue;
+    if (cnt.t < tuftCount && rnd() < .7) place(tufts, 't', b.x, -.12, b.z, [1, .7 + rnd(), 1].map(v => v * (.8 + rnd() * .5)), [0, rnd() * TAU, 0], col.setHSL(.24 + rnd() * .08, .5, .2 + rnd() * .16));
+    else if (cnt.n < flowerCount) place(daisies, 'n', b.x, -.12, b.z, [1, 1, 1].map(v => v * (.8 + rnd() * .5)), [0, rnd() * TAU, 0]);
+  }
+  [[rocks, 'r'], [pebbles, 'p'], [tufts, 't'], [daisies, 'n'], [ferns, 'f'], [reeds, 'e']].forEach(([m, k]) => { m.count = cnt[k]; m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; group.add(m); m.castShadow = false; });
+  rocks.castShadow = !mobile; rocks.receiveShadow = true;
 
   // Spring boulders and a small cascade feeding the stream
   const boulderMat = new THREE.MeshStandardMaterial({ color: 0x5b6670, roughness: .95, flatShading: true });
@@ -154,14 +160,14 @@ export function buildTerrain(parent, { colliders, mobile = false, reduced = fals
   });
   colliders.push({ t: 'c', x: SPRING.x, z: SPRING.z, r: 2.4 }, { t: 'c', x: SPRING.x + 1.6, z: SPRING.z - 1.4, r: 1.5 }, { t: 'c', x: SPRING.x - 1.2, z: SPRING.z + 1.7, r: 1.4 });
   const sdir = new V3(STREAM_POINTS[1][0] - STREAM_POINTS[0][0], 0, STREAM_POINTS[1][1] - STREAM_POINTS[0][1]).normalize();
-  const sf = waterMat(FALL_FS, THREE.DoubleSide); mats.push(sf);
+  const sf = makeFallMaterial(); mats.push(sf);
   const spring = new THREE.Mesh(fallStrip(new V3(STREAM_POINTS[0][0] - sdir.x * 1.2, 0, STREAM_POINTS[0][1] - sdir.z * 1.2), sdir.clone().multiplyScalar(-1).multiplyScalar(-1), 1.0, -.03, 1.0, .8, 8), sf); spring.renderOrder = 4; group.add(spring);
 
   // Big waterfall over the rim
   const end = STREAM_SAMPLES.at(-1), prev = STREAM_SAMPLES.at(-4);
   const dirOut = new V3(end.x - prev.x, 0, end.z - prev.z).normalize(), radial = new V3(end.x, 0, end.z).normalize();
   const out = dirOut.clone().lerp(radial, .6).normalize();
-  const wf = waterMat(FALL_FS, THREE.DoubleSide); mats.push(wf);
+  const wf = makeFallMaterial(); mats.push(wf);
   const lip = new V3(end.x, 0, end.z);
   const fall = new THREE.Mesh(fallStrip(lip, out, -.04, -4.2, STREAM_WIDTH * .95, 2.3, 18), wf); fall.renderOrder = 4; group.add(fall);
   const fall2 = new THREE.Mesh(fallStrip(lip.clone().addScaledVector(out, .08), out, -.04, -4.2, STREAM_WIDTH * .7, 2.5, 18), wf); fall2.renderOrder = 5; group.add(fall2);
@@ -217,10 +223,10 @@ export function buildTerrain(parent, { colliders, mobile = false, reduced = fals
   const sign = new THREE.Mesh(new THREE.PlaneGeometry(1.7, .64), new THREE.MeshStandardMaterial({ map: signTex, roughness: .8 })); sign.position.set(-1.3, 1.1, .6); sign.rotation.y = .5; deck.add(sign);
   const signPost = new THREE.Mesh(new THREE.CylinderGeometry(.05, .06, 1.0, 6), woodDark); signPost.position.set(-1.3, .5, .55); deck.add(signPost);
 
-  function update(time, on) {
+  function update(time, on, camPos, sky) {
     const day = 1 - on;
-    mats.forEach(m => { m.uniforms.uTime.value = reduced ? 0 : time; m.uniforms.uDay.value = day; });
-    if (reedMat.userData.sh) reedMat.userData.sh.uniforms.uTime.value = reduced ? 0 : time;
+    updateWater(mats, time, day, camPos, sky, reduced);
+    wind.userData.setTime(reduced ? 0 : time); reedMat.userData.setTime(reduced ? 0 : time);
     mist.forEach((s, i) => { s.material.opacity = (.16 + .1 * Math.sin(time * .9 + s.userData.p)) * (.5 + .5 * day); const k = 1 + .08 * Math.sin(time * 1.3 + i); s.scale.setScalar((5 + (i % 3)) * k * 1.0); });
     foam.scale.setScalar(1 + .06 * Math.sin(time * 2.2)); foam.material.opacity = .28 + .12 * day;
   }

@@ -1,3 +1,12 @@
+# LEMONVERSE test report · v2.4 · October 28, 2026
+
+- `npm test` and `npm run build` pass.
+- Real browser, software WebGL, no JavaScript errors. 198 colliders, 40 trees, 65 lamps, 13 ground animals, 10 birds, 16 butterflies, 8 fish, 1 tiger.
+- Looked at in screenshots: stream and bank, pond with egret, lotus, kingfisher and picnic table, forest with tiger, stag, deer, ferns and mushrooms, meadow with dirt trail.
+- Collision walks (295 straight walks into obstacles): 0 pass throughs. Edge, bridge crossing and stream blocking still work.
+- Not looked at in screenshots: the swan and ducks, rabbits close up, night view of the pond and forest, phones.
+- Not tested: real phone frame rate. This version has the most objects so far. If it stutters, reduce counts in `src/nature.js`, `src/animals.js` and `lamps.initLights` in `src/world.js`.
+
 # LEMONVERSE test report · v2.3 · October 27, 2026
 
 ## v2.3 checks

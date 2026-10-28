@@ -12,6 +12,7 @@ import { resolve, avoid } from './collision.js';
 import { createHero, animateHero } from './hero.js';
 import { buildTerrain, groundHeight, terrainBlocked, TOWER_SITES } from './terrain.js';
 import { buildAnimals } from './animals.js';
+import { buildPond } from './pond.js';
 const colliders = [];
 const REDUCED_MOTION = typeof matchMedia==='function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -62,18 +63,19 @@ function pillar(parent,x,z,height,mat=MT.titanium){rounded(parent,.49,height,.49
 
 function createIsland(world){
   const island=new THREE.Group();world.add(island);
-  cyl(island,38,37.4,.43,0,-.35,0,MT.slate,128);
+  const gtex=(()=>{const c=document.createElement('canvas');c.width=c.height=512;const g=c.getContext('2d');let s=2024;const r=()=>((s=(1664525*s+1013904223)>>>0)/4294967296);
+    g.fillStyle='#4f7a3d';g.fillRect(0,0,512,512);
+    for(let i=0;i<70;i++){const x=r()*512,y=r()*512,rad=30+r()*70,gr=g.createRadialGradient(x,y,0,x,y,rad),hue=r()<.5?'92,132,58':r()<.5?'62,104,52':'120,140,62';gr.addColorStop(0,`rgba(${hue},.38)`);gr.addColorStop(1,`rgba(${hue},0)`);g.fillStyle=gr;g.fillRect(x-rad,y-rad,rad*2,rad*2);}
+    for(let i=0;i<5200;i++){const x=r()*512,y=r()*512,l=3+r()*7,a=(r()-.5)*.9;g.strokeStyle=r()<.5?`rgba(${30+r()*40},${80+r()*60},${34+r()*20},.5)`:`rgba(${120+r()*60},${150+r()*50},${60+r()*30},.4)`;g.lineWidth=1;g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.sin(a)*l,y-Math.cos(a)*l);g.stroke();}
+    const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(11,11);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t;})();
+  const grassTop=new THREE.MeshStandardMaterial({map:gtex,roughness:1,metalness:0,color:0xffffff});
+  cyl(island,38,37.4,.43,0,-.35,0,grassTop,128);
   cyl(island,38.5,37.7,.45,0,-.75,0,MT.titanium,128);
   cyl(island,37,39,2.5,0,-2.1,0,MT.basalt,128);
   cyl(island,35.3,37.5,.46,0,-3.5,0,MT.darkMetal,128);
   ring(island,38.04,.10,0,-.54,0,glowMat(0x398993,.55));
   ring(island,37.1,.045,0,-3.28,0,glowMat(0x3cc7db,.75));
   const water=mesh(world,new THREE.CircleGeometry(135,128),new THREE.MeshPhysicalMaterial({color:0x0a2231,roughness:.23,metalness:.67,transparent:true,opacity:.82,clearcoat:.9}),0,-4.11,0,false);water.rotation.x=-Math.PI/2;
-  const lines=[];for(let r=7;r<=36;r+=7){const pts=[];for(let n=0;n<=110;n++){const a=n/110*TAU;pts.push(new V3(Math.cos(a)*r,-.09,Math.sin(a)*r));}lines.push(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0x7faeb5,transparent:true,opacity:r>25?.16:.08})));}
-  lines.forEach(l=>world.add(l));
-  const seamMat=new THREE.LineBasicMaterial({color:0x8ab3c3,transparent:true,opacity:.105});
-  const seamPts=[];for(let a=0;a<TAU;a+=Math.PI/14){seamPts.push(new V3(5*Math.cos(a),-.075,5*Math.sin(a)),new V3(36*Math.cos(a),-.075,36*Math.sin(a)));}
-  world.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(seamPts),seamMat));
   for(let i=0;i<36;i++){const a=i/36*TAU;const x=Math.cos(a)*36.6,z=Math.sin(a)*36.6;const p=mesh(world,new THREE.DodecahedronGeometry(.65+(i%4)*.17,0),i%4?MT.stone:MT.slate,x,-.08,z,false);p.scale.set(1,.35,1);p.rotation.y=a;}
   island.userData.water=water.material;
   return island;
@@ -326,7 +328,8 @@ export function createWorld(container,{onStationClick=()=>{}}={}){
   };
   const terrain=buildTerrain(world,{colliders,mobile,reduced:REDUCED_MOTION});
   const nature=buildNature(world,{isFree,colliders,mobile,reduced:REDUCED_MOTION});
-  const animals=buildAnimals(world,{colliders,isFree,anchors:nature.anchors,mobile,reduced:REDUCED_MOTION});
+  const pond=buildPond(world,{colliders,nature,mobile,reduced:REDUCED_MOTION});
+  const animals=buildAnimals(world,{colliders,isFree,anchors:nature.anchors,forest:nature.forest,mobile,reduced:REDUCED_MOTION});
   const atmosphere=createAtmosphere(scene,{hemi:ambient,key:sun,rim:rimLight,waterMat:island.userData.water,renderer,reduced:REDUCED_MOTION});
   lamps.initLights(scene,mobile?4:7);
   const player=createHero(scene);
@@ -374,7 +377,8 @@ export function createWorld(container,{onStationClick=()=>{}}={}){
   function tick(dt,time,axes={x:0,y:0},sprint=false,paused=false){
     if(disposed)return {arrived:null};const d=clamp(dt,0,.05);
     atmosphere.update(d,time);const on=atmosphere.on;
-    lamps.update(on,player.pivot.position,time);nature.update(time,on);terrain.update(time,on);
+    lamps.update(on,player.pivot.position,time);nature.update(time,on);terrain.update(time,on,camera.position,scene.fog.color);
+    pond.update(time,d,on,camera.position,scene.fog.color);
     animals.update(time,d,on,player.pivot.position);
     headlamp.intensity=lerp(headlamp.intensity,5*on,Math.min(1,d*4));
     if(!REDUCED_MOTION)animated.forEach(a=>a.tick(time,d));

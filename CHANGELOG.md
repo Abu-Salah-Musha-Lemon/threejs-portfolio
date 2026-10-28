@@ -1,3 +1,14 @@
+# Changelog v2.4 (realistic nature pass, from your reference photos)
+
+- Water: clear turquoise stream with a pebble bed, white riffles and sparkle; calm pond water with lily pads and pink lotus flowers.
+- Banks: moss covered stones, pebbles, ferns, daisies, tall grass and reeds. A meadow now covers the open ground, with a worn dirt trail and grass fringe.
+- Pond (west of the hub) with an egret on a rock, a swan and ducks, a kingfisher on a shore branch, and a picnic bench and table with a coffee cup under an oak, like your lake photo.
+- Small forest south of the hub, reached by a dirt trail: tall pines, oaks and birches, ferns, red mushrooms, fallen logs.
+- Animals from your photos: spotted deer with antlers, a fawn, fluffy rabbits and a tiger that lives in the forest.
+- Fix: pines now have a bare trunk below head height, so first person view is no longer inside the foliage. Pine collision is wider.
+- Fix: the new modules were not wired into the world (`buildPond`, forest for animals) and one texture helper had two different signatures, which stopped the world from starting. Both fixed.
+- Tests updated for the pond.
+
 # Changelog v2.3 (robot, whole island, stream, bridge, animals, jump, cameras)
 
 ## Robot

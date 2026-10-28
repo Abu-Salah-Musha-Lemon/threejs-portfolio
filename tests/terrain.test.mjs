@@ -19,6 +19,7 @@ let prev = groundHeight(B.cx - B.ax * 4.3, B.cz - B.az * 4.3);
 for (let u = -4.3; u <= 4.3; u += .2) { const h = groundHeight(B.cx + B.ax * u, B.cz + B.az * u); assert.ok(Math.abs(h - prev) < .12, 'deck step at u=' + u); prev = h; }
 // Props are kept off the stream, but open ground stays open.
 assert.equal(terrainBlocked(B.cx, B.cz), true);
-assert.equal(terrainBlocked(-20, 20), false);
+assert.equal(terrainBlocked(-24, 20.5), true, 'pond is blocked');
+assert.equal(terrainBlocked(-8, 29), false);
 assert.equal(terrainBlocked(0, 1), false);
 console.log('terrain tests passed');
