@@ -180,7 +180,38 @@ function initDayNight(){
   const day=stored?stored==='day':(settings.autoDayByClock?byClock:false);
   world.setDaylight(day,true);syncDayNight(day);
 }
+const CAM_LABEL={overview:'VIEW: OVERVIEW',chase:'VIEW: FOLLOW',first:'VIEW: FIRST PERSON'};
+function syncCamera(mode){
+  el('cam-label').textContent=CAM_LABEL[mode];
+  document.body.classList.toggle('cam-first',mode==='first');document.body.classList.toggle('cam-chase',mode==='chase');
+  el('crosshair').hidden=mode!=='first';
+  el('look-hint').hidden=true;
+}
+function cycleCamera(){
+  const mode=world.cycleCameraMode();syncCamera(mode);toast(CAM_LABEL[mode]);
+  if(mode==='first'&&matchMedia('(pointer:fine)').matches){el('look-hint').hidden=false;setTimeout(()=>{el('look-hint').hidden=true;},4500);}
+}
+function installLook(){
+  const canvas=()=>world&&world.canvas;let drag=null;
+  el('game').addEventListener('pointerdown',event=>{
+    if(!world||world.getCameraMode()==='overview'||!state.playing)return;
+    if(event.pointerType==='mouse'&&world.getCameraMode()==='first'&&document.pointerLockElement!==canvas()){canvas().requestPointerLock?.();}
+    drag={id:event.pointerId,x:event.clientX,y:event.clientY};
+  });
+  window.addEventListener('pointermove',event=>{
+    if(!world||world.getCameraMode()==='overview')return;
+    if(document.pointerLockElement===canvas()){world.addLook(event.movementX*.0024,event.movementY*.0024);return;}
+    if(drag&&drag.id===event.pointerId){world.addLook((event.clientX-drag.x)*.0048,(event.clientY-drag.y)*.0048);drag.x=event.clientX;drag.y=event.clientY;}
+  });
+  const end=event=>{if(drag&&drag.id===event.pointerId)drag=null;};
+  window.addEventListener('pointerup',end);window.addEventListener('pointercancel',end);
+  document.addEventListener('pointerlockchange',()=>{el('look-hint').hidden=true;});
+}
 function installEvents(){
+  el('cam-btn').addEventListener('click',cycleCamera);
+  el('touch-cam').addEventListener('click',cycleCamera);
+  el('touch-jump').addEventListener('pointerdown',event=>{event.preventDefault();world.jump();});
+  installLook();
   el('start').addEventListener('click',enterWorld);
   el('intro-how').addEventListener('click',showInstructions);
   el('help').addEventListener('click',showInstructions);
@@ -225,6 +256,8 @@ function installEvents(){
     const tag=event.target?.tagName;
     if(['INPUT','TEXTAREA','SELECT'].includes(tag))return;
     if(event.code==='Escape' && state.modal){event.preventDefault();closeModal();return;}
+    if(event.code==='Space' && state.playing && !state.modal){event.preventDefault();world.jump();return;}
+    if(event.code==='KeyV' && state.playing && !state.modal && !event.repeat){event.preventDefault();cycleCamera();return;}
     if(event.code==='KeyM' && state.playing && !event.repeat){event.preventDefault();state.modal?closeModal():openModal('map-overlay');return;}
     if(event.code==='KeyE' && state.playing && !state.modal && !event.repeat){event.preventDefault();interactNearby();return;}
     if(['KeyW','KeyA','KeyS','KeyD','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','ShiftLeft','ShiftRight'].includes(event.code)){

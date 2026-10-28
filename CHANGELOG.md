@@ -1,3 +1,32 @@
+# Changelog v2.3 (robot, whole island, stream, bridge, animals, jump, cameras)
+
+## Robot
+- New model: white shell, lemon accents, glowing chest core, visor with blinking eyes, swaying antenna, jet pack.
+- Better animation: walk and sprint cycle, breathing when idle, lean while running, arms up and jet flames when jumping, squash on landing, shadow that shrinks in the air.
+
+## Whole island
+- You can walk to the very edge of the disk (circle of radius 37, was a box of 56 by 48). Rim bollards are solid.
+
+## Jump
+- Space on desktop, JUMP button on phones. Apex about 1.4 units, you can jump over the stream.
+
+## Camera views
+- V key, VIEW button in the top bar, or the VIEW button on phones cycles: Overview (as before), Follow (behind the robot), First person.
+- In Follow and First person, WASD moves relative to where you look. Desktop: click the scene in first person and move the mouse (Esc releases). Phones: drag the screen to look.
+
+## Stream, waterfall, bridge
+- A stream runs from a spring on the west rim to a waterfall off the north east rim, with animated water, banks, rocks and reeds. Fish swim in it.
+- An arched wooden bridge crosses it (walkable, lanterns at the ends), with a stone trail from the hub and a lookout deck on the far bank.
+- The stream blocks walking, but you can jump over it.
+- All of it lives in `src/terrain.js`. Positions are listed at the top of that file.
+
+## Animals
+- 7 rabbits and 3 deer wander and run away when you come close, 11 birds circle overhead, 16 butterflies by day, fireflies by night, 8 fish. Birds and butterflies rest at night.
+- Code in `src/animals.js`. Counts are lower on phones.
+
+## Tests
+- `npm test` now also checks the terrain (bridge height, stream clearance, jump over water).
+
 # Changelog v2.2 (world pass: lamps, collisions, trees, day and night)
 
 ## Lamps

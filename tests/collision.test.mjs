@@ -25,4 +25,8 @@ for (let i = 0; i < 20000; i++) {
 assert.deepEqual(resolve(10, 10, all, .45), { x: 10, z: 10 });
 // Steering pushes away from an obstacle on the right.
 assert.ok(avoid(5.8, 5, [box], 2).x > 0);
+// Water colliders block walking but not jumping.
+const water = { t: 'b', x: 0, z: 20, hw: 2, hd: 1.5, rot: 0, low: true };
+assert.ok(overlaps(0, 20, [water], .45, 0), 'on the ground the water blocks');
+assert.equal(overlaps(0, 20, [water], .45, 1.2), false, 'in the air the water does not block');
 console.log('collision tests passed');

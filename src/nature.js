@@ -268,5 +268,5 @@ export function buildNature(parent, { isFree, colliders, mobile = false, reduced
       flyGeo.attributes.position.needsUpdate = true;
     }
   }
-  return { update, treeCount: trees.length, groveCount: centers.length };
+  return { update, treeCount: trees.length, groveCount: centers.length, anchors: centers };
 }

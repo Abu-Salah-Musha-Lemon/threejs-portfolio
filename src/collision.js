@@ -4,10 +4,11 @@
  *   { t:'c', x, z, r }                    circle (bushes, lamp posts)
  *   { t:'b', x, z, hw, hd, rot }          box, half width/depth, rotation around Y (trees, rocks, towers)
  */
-export function resolve(x, z, colliders, pr = 0.45) {
+export function resolve(x, z, colliders, pr = 0.45, y = 0) {
   for (let pass = 0; pass < 3; pass++) {
     let moved = false;
     for (const c of colliders) {
+      if (c.low && y > 0.55) continue; // water: jump over it
       if (c.t === 'c') {
         const dx = x - c.x, dz = z - c.z, min = c.r + pr, d2 = dx * dx + dz * dz;
         if (d2 < min * min) {
@@ -33,8 +34,8 @@ export function resolve(x, z, colliders, pr = 0.45) {
 }
 
 /** True when a point (with player radius) overlaps any collider. */
-export function overlaps(x, z, colliders, pr = 0.45) {
-  const r = resolve(x, z, colliders, pr);
+export function overlaps(x, z, colliders, pr = 0.45, y = 0) {
+  const r = resolve(x, z, colliders, pr, y);
   return Math.abs(r.x - x) > 1e-6 || Math.abs(r.z - z) > 1e-6;
 }
 

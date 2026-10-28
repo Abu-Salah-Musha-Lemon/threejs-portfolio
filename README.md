@@ -46,6 +46,8 @@ npm run preview
 | Explore nearest chapter | E |
 | Open/close map | M |
 | Quick View (no game) | Button in the intro and top bar |
+| Jump | Space (JUMP button on phones) |
+| Camera view: overview, follow, first person | V (VIEW button) |
 | Zoom camera | Mouse wheel |
 | Navigate on mobile | Virtual joystick and Explore button |
 | Fast travel | Click the map icon or mission item |

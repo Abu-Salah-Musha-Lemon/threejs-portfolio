@@ -1,4 +1,16 @@
-# LEMONVERSE test report · v2.2 · October 26, 2026
+# LEMONVERSE test report · v2.3 · October 27, 2026
+
+## v2.3 checks
+- `npm test` passes (collision and terrain tests). `npm run build` passes.
+- Real browser, software WebGL, no JavaScript errors on desktop and on an emulated touch phone.
+- Walked to radius 37 (the island edge) in 6 of 7 straight lines, the seventh was stopped by a tree, as intended.
+- Walked over the bridge from the south bank to the north rim. Walking into the stream away from the bridge is blocked.
+- Jump with sprint carried the robot over the stream (apex 1.4, landed on the far bank).
+- Touch phone: JUMP and VIEW buttons visible and working. First person and Follow views render.
+- Not tested: real frame rate on phones. This version adds grass, animals, water shaders and more lights. If it stutters, lower `grassCount` in `src/nature.js`, the animal counts in `src/animals.js`, or `lamps.initLights` in `src/world.js`.
+- Not tested: pointer lock with a real mouse (headless browsers cannot do it), click to look in first person.
+
+# v2.2 report
 
 ## v2.2 checks
 - `npm test` passes (collision unit tests, including 20,000 random points).
